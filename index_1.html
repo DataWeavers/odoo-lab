@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Order, Five Modules</title>
+<style>
+  :root {
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --ink: #1b2430;
+    --muted: #5b6472;
+    --line: #d9d4c9;
+    --accent: #1f3864;
+    --accent-warn: #a3742e;
+    --lane-a: #f1efe9;
+    --lane-b: #ffffff;
+    --task-bg: #ffffff;
+    --task-border: #1f3864;
+    --gateway-bg: #fbf1e0;
+    --gateway-border: #a3742e;
+    --event-fill: #1f3864;
+    --event-ink: #ffffff;
+    --callout-bg: #fbf1e0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181f;
+      --surface: #1b212a;
+      --ink: #e8e6df;
+      --muted: #9aa3b1;
+      --line: #333c48;
+      --accent: #7f9bd1;
+      --accent-warn: #d8a758;
+      --lane-a: #1f2530;
+      --lane-b: #171c24;
+      --task-bg: #202631;
+      --task-border: #7f9bd1;
+      --gateway-bg: #2c2517;
+      --gateway-border: #d8a758;
+      --event-fill: #7f9bd1;
+      --event-ink: #14181f;
+      --callout-bg: #2c2517;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181f;
+    --surface: #1b212a;
+    --ink: #e8e6df;
+    --muted: #9aa3b1;
+    --line: #333c48;
+    --accent: #7f9bd1;
+    --accent-warn: #d8a758;
+    --lane-a: #1f2530;
+    --lane-b: #171c24;
+    --task-bg: #202631;
+    --task-border: #7f9bd1;
+    --gateway-bg: #2c2517;
+    --gateway-border: #d8a758;
+    --event-fill: #7f9bd1;
+    --event-ink: #14181f;
+    --callout-bg: #2c2517;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+    padding: 32px 20px 64px;
+    font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-warn);
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.1;
+    margin: 0 0 12px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .dek {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 28px;
+  }
+  .dek strong { color: var(--ink); font-weight: 600; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(27,36,48,0.06);
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .legend-item svg { flex: none; }
+  .legend-item b { color: var(--ink); font-weight: 600; }
+
+  figure { margin: 0 0 8px; }
+  .diagram-holder {
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 1px 2px rgba(27,36,48,0.06);
+  }
+  .diagram-holder svg {
+    display: block;
+    width: 100%;
+    min-width: 720px;
+    max-width: 1240px;
+    height: auto;
+    margin: 0 auto;
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  }
+  figcaption {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+    max-width: 78ch;
+  }
+
+  .notes {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 28px;
+  }
+  .notes h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-warn);
+    margin: 0 0 10px;
+  }
+  .notes p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink);
+    margin: 0;
+  }
+  .notes code {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 0.9em;
+    background: var(--lane-a);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 24px 14px 48px; }
+    .legend { gap: 14px; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">BCOR-2710 · Odoo ERP Lab</p>
+  <h1>One Order, Five Modules</h1>
+  <p class="dek">This is the process map behind the 45-minute lab: <strong>one customer order</strong> threaded live through CRM, Sales, Inventory, Purchase, and Accounting. The diagram below follows Odoo's own screens and button labels — including the one moment the order gets stuck, and which module has to act before it can move again.</p>
+
+  <div class="legend" aria-hidden="true">
+    <div class="legend-item">
+      <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="var(--event-fill)"/></svg>
+      <span><b>Start / End</b> — the order begins or lands</span>
+    </div>
+    <div class="legend-item">
+      <svg width="34" height="24" viewBox="0 0 34 24"><rect x="1" y="1" width="32" height="22" rx="5" fill="var(--task-bg)" stroke="var(--task-border)" stroke-width="2"/></svg>
+      <span><b>Task</b> — one click a student makes in Odoo</span>
+    </div>
+    <div class="legend-item">
+      <svg width="26" height="26" viewBox="0 0 26 26"><polygon points="13,2 24,13 13,24 2,13" fill="var(--gateway-bg)" stroke="var(--gateway-border)" stroke-width="2"/></svg>
+      <span><b>Decision</b> — Odoo checks a condition</span>
+    </div>
+    <div class="legend-item">
+      <svg width="34" height="14" viewBox="0 0 34 14"><line x1="2" y1="7" x2="28" y2="7" stroke="var(--accent-warn)" stroke-width="3"/><polygon points="28,2 34,7 28,12" fill="var(--accent-warn)"/></svg>
+      <span><b>Gold arrow</b> — the integration hand-off being taught</span>
+    </div>
+  </div>
+
+  <figure>
+    <div class="diagram-holder">
+      <svg viewBox="0 0 1260 570" role="img" aria-label="Horizontal swimlane diagram with five lanes — CRM, Sales, Inventory, Purchase, Accounting — showing one sales order flowing through Odoo: a CRM opportunity becomes a quotation, Sales confirms the order, Inventory finds it cannot ship because stock is zero, Purchase replenishes and receives ten units, Inventory then ships, and Accounting invoices and collects payment, ending in In Payment status.">
+        <defs>
+          <marker id="arrowInk" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--task-border)"/>
+          </marker>
+          <marker id="arrowWarn" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-warn)"/>
+          </marker>
+        </defs>
+
+        <!-- lane bands -->
+        <rect x="0" y="44"  width="1260" height="90"  fill="var(--lane-a)"/>
+        <rect x="0" y="134" width="1260" height="90"  fill="var(--lane-b)"/>
+        <rect x="0" y="224" width="1260" height="110" fill="var(--lane-a)"/>
+        <rect x="0" y="334" width="1260" height="110" fill="var(--lane-b)"/>
+        <rect x="0" y="444" width="1260" height="90"  fill="var(--lane-a)"/>
+
+        <!-- lane divider lines -->
+        <line x1="0" y1="44"  x2="1260" y2="44"  stroke="var(--line)" stroke-width="1.5"/>
+        <line x1="0" y1="134" x2="1260" y2="134" stroke="var(--line)" stroke-width="1.5"/>
+        <line x1="0" y1="224" x2="1260" y2="224" stroke="var(--line)" stroke-width="1.5"/>
+        <line x1="0" y1="334" x2="1260" y2="334" stroke="var(--line)" stroke-width="1.5"/>
+        <line x1="0" y1="444" x2="1260" y2="444" stroke="var(--line)" stroke-width="1.5"/>
+        <line x1="0" y1="534" x2="1260" y2="534" stroke="var(--line)" stroke-width="1.5"/>
+        <line x1="110" y1="44" x2="110" y2="534" stroke="var(--line)" stroke-width="1.5"/>
+
+        <!-- lane labels -->
+        <text x="55" y="93"  text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">CRM</text>
+        <text x="55" y="183" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">Sales</text>
+        <text x="55" y="273" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">Inventory</text>
+        <text x="55" y="383" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">Purchase</text>
+        <text x="55" y="493" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">Accounting</text>
+
+        <!-- ===================== ARROWS ===================== -->
+        <!-- a: start -> Log Opportunity -->
+        <line x1="174" y1="89" x2="235" y2="89" stroke="var(--task-border)" stroke-width="2" marker-end="url(#arrowInk)"/>
+        <!-- b: Log Opportunity -> Add Line & Confirm (CRM -> Sales) -->
+        <polyline points="300,124 300,134 450,134 450,144" fill="none" stroke="var(--task-border)" stroke-width="2" marker-end="url(#arrowInk)"/>
+        <!-- c: Add Line & Confirm -> Gateway (Sales -> Inventory) -->
+        <polyline points="450,214 450,230 600,230 600,245" fill="none" stroke="var(--task-border)" stroke-width="2" marker-end="url(#arrowInk)"/>
+        <!-- d: Gateway -> Replenish task (Inventory -> Purchase) — BLOCKED PATH -->
+        <polyline points="600,313 600,334 750,334 750,354" fill="none" stroke="var(--accent-warn)" stroke-width="3" marker-end="url(#arrowWarn)"/>
+        <rect x="613" y="324" width="122" height="18" rx="4" fill="var(--surface)"/>
+        <text x="674" y="337" text-anchor="middle" font-size="11" font-weight="600" fill="var(--accent-warn)">No — 0 on hand</text>
+        <!-- e: Replenish task -> Validate Delivery (Purchase -> Inventory, loop back) — RESOLUTION -->
+        <polyline points="750,354 750,334 900,334 900,314" fill="none" stroke="var(--accent-warn)" stroke-width="3" marker-end="url(#arrowWarn)"/>
+        <rect x="766" y="324" width="128" height="18" rx="4" fill="var(--surface)"/>
+        <text x="830" y="337" text-anchor="middle" font-size="11" font-weight="600" fill="var(--accent-warn)">Now 10 in stock</text>
+        <!-- f: Validate Delivery -> Invoice (Inventory -> Accounting) -->
+        <polyline points="900,314 900,384 1050,384 1050,454" fill="none" stroke="var(--task-border)" stroke-width="2" marker-end="url(#arrowInk)"/>
+        <!-- g: Invoice -> End -->
+        <line x1="1115" y1="489" x2="1176" y2="489" stroke="var(--task-border)" stroke-width="2" marker-end="url(#arrowInk)"/>
+
+        <!-- ===================== NODES ===================== -->
+
+        <!-- Start event -->
+        <circle cx="150" cy="89" r="24" fill="var(--event-fill)"/>
+        <text x="150" y="94" text-anchor="middle" font-size="16" fill="var(--event-ink)">✦</text>
+        <text x="150" y="132" text-anchor="middle" font-size="10.5" fill="var(--muted)">Order: 5 backpacks</text>
+
+        <!-- CRM: Log Opportunity → New Quotation -->
+        <rect x="235" y="54" width="130" height="70" rx="10" fill="var(--task-bg)" stroke="var(--task-border)" stroke-width="2"/>
+        <text x="300" y="86" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">Log Opportunity</text>
+        <text x="300" y="103" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">→ New Quotation</text>
+
+        <!-- Sales: Add Line & Confirm Order -->
+        <rect x="385" y="144" width="130" height="70" rx="10" fill="var(--task-bg)" stroke="var(--task-border)" stroke-width="2"/>
+        <text x="450" y="176" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">Add Line, Qty 5</text>
+        <text x="450" y="193" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">→ Confirm Order</text>
+
+        <!-- Inventory: gateway -->
+        <polygon points="600,245 634,279 600,313 566,279" fill="var(--gateway-bg)" stroke="var(--gateway-border)" stroke-width="2.5"/>
+        <line x1="591" y1="270" x2="609" y2="288" stroke="var(--gateway-border)" stroke-width="2"/>
+        <line x1="609" y1="270" x2="591" y2="288" stroke="var(--gateway-border)" stroke-width="2"/>
+        <text x="556" y="283" text-anchor="end" font-size="12" font-weight="600" fill="var(--ink)">Stock ≥ 5?</text>
+
+        <!-- Purchase: Replenish → Confirm PO → Receive Stock -->
+        <rect x="685" y="354" width="130" height="70" rx="10" fill="var(--task-bg)" stroke="var(--task-border)" stroke-width="2"/>
+        <text x="750" y="376" text-anchor="middle" font-size="10.8" font-weight="600" fill="var(--ink)">Replenish →</text>
+        <text x="750" y="391" text-anchor="middle" font-size="10.8" font-weight="600" fill="var(--ink)">Confirm PO →</text>
+        <text x="750" y="406" text-anchor="middle" font-size="10.8" font-weight="600" fill="var(--ink)">Receive Stock</text>
+
+        <!-- Inventory: Validate Delivery (Ship) -->
+        <rect x="835" y="244" width="130" height="70" rx="10" fill="var(--task-bg)" stroke="var(--task-border)" stroke-width="2"/>
+        <text x="900" y="276" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">Validate Delivery</text>
+        <text x="900" y="293" text-anchor="middle" font-size="11.5" fill="var(--muted)">(Ship)</text>
+
+        <!-- Accounting: Create, Post Invoice → Pay -->
+        <rect x="985" y="454" width="130" height="70" rx="10" fill="var(--task-bg)" stroke="var(--task-border)" stroke-width="2"/>
+        <text x="1050" y="486" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">Create &amp; Post</text>
+        <text x="1050" y="503" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">Invoice → Pay</text>
+
+        <!-- End event -->
+        <circle cx="1200" cy="489" r="24" fill="var(--event-fill)"/>
+        <circle cx="1200" cy="489" r="18.5" fill="none" stroke="var(--surface)" stroke-width="2"/>
+        <text x="1200" y="529" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink)">In Payment</text>
+      </svg>
+    </div>
+    <figcaption>Every task and status here is the actual Odoo wording used in the lab handout — down to the "Replenish" button and the "In Payment" status the invoice ends on.</figcaption>
+  </figure>
+
+  <div class="notes">
+    <div>
+      <h2>The one hand-off that's the point</h2>
+      <p>The gold loop is the whole lesson. Every student's product starts at zero on-hand, so the delivery Odoo creates after <code>Confirm Order</code> is always stuck on "Waiting" — Sales confirmed a promise Inventory can't keep yet. Nothing about Sales is broken; a different module just hasn't acted.</p>
+    </div>
+    <div>
+      <h2>Why the loop resolves itself</h2>
+      <p><code>Replenish</code> and <code>Confirm PO</code> in Purchase are what unstick it — the moment those ten units are received, the same delivery record flips to "Ready" with no one touching Inventory directly. That's the integration: one action in a different module silently repairs a blocked task without anyone going back to fix it by hand.</p>
+    </div>
+    <div>
+      <h2>Reading this as BPMN</h2>
+      <p>Rounded rectangles are tasks (grouping the clicks each app owns), the diamond is the one decision Odoo makes on its own, and lanes show which app owns each step. The straight arrows are the happy path; the gold arrows are the cross-module dependency the whole 45 minutes is built to surface.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
